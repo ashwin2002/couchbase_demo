@@ -1,6 +1,6 @@
 from datetime import timedelta
 
-# needed for any cluster connection
+# needed for Couchbase cluster connection
 from couchbase.auth import PasswordAuthenticator
 from couchbase.cluster import Cluster
 from couchbase.options import ClusterOptions
@@ -9,9 +9,7 @@ from couchbase.options import ClusterOptions
 class CouchbaseSDK(object):
     def __init__(self, ip, username, password, bucket_name=None):
         auth = PasswordAuthenticator(username, password)
-
         self.cluster = Cluster(f'couchbase://{ip}', ClusterOptions(auth))
-        self.cluster.wait_until_ready(timedelta(seconds=5))
 
         self.bucket = self.collection = None
         if bucket_name:
@@ -37,3 +35,6 @@ class CouchbaseSDK(object):
 
     def delete(self, doc_key):
         return self.collection.remove(doc_key)
+
+    def query(self, statement):
+        return self.cluster.query(statement)
